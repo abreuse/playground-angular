@@ -1,26 +1,42 @@
+<!-- TEMPLATE DRIVEN FORM -->
 <div class="container">
-  <form (ngSubmit)="onSubmit()" #identityForm="ngForm">
+  <form (ngSubmit)="onSubmit()" #identityForm="ngForm" appDifferentNames>
     <div class="form-group">
       <label for="firstname">Firstname</label><br>
-      <input class="form-control" id="firstname" name="firstname"
+      <input [ngClass]="{'ng-invalid': identityForm.errors?.hasSameNames}"
+             class="form-control" id="firstname" name="firstname"
+             appForbiddenName="toto" appUniqueName autocomplete="off"
              [(ngModel)]="person.firstname" #firstname="ngModel" required>
+      <mat-spinner *ngIf="firstname.pending"></mat-spinner>
       <div class="error"
            *ngIf="firstname.invalid && (firstname.dirty || firstname.touched)">
         <div *ngIf="firstname.errors.required">
           Firstname is required.
+        </div>
+        <div *ngIf="firstname.errors.forbiddenName">
+          This name is forbidden.
+        </div>
+        <div *ngIf="firstname.errors.nameIsTaken">
+          This name is already taken.
         </div>
       </div>
     </div>
 
     <div class="form-group">
       <label for="lastname">Lastname</label><br>
-      <input class="form-control" id="lastname" name="lastname"
+      <input [ngClass]="{'ng-invalid': identityForm.errors?.hasSameNames}"
+             class="form-control" id="lastname" name="lastname"
+             appForbiddenName="tata" appUniqueName autocomplete="off"
              [(ngModel)]="person.lastname" #lastname="ngModel" required>
       <div class="error"
            *ngIf="lastname.invalid && (lastname.dirty || lastname.touched)">
         <div *ngIf="lastname.errors.required">
           Lastname is required.
         </div>
+      </div>
+      <div *ngIf="identityForm.errors?.hasSameNames && firstname.dirty && lastname.dirty"
+      class="error">
+          Firstname and Lastname must be different.
       </div>
       <div>
         <button type="submit" class="btn btn-success" [disabled]="identityForm.form.invalid">Save</button>
